@@ -6,32 +6,65 @@
 /*   By: epillot <marvin@42.fr>                     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2016/12/27 11:45:18 by epillot           #+#    #+#             */
-/*   Updated: 2017/01/06 15:49:28 by epillot          ###   ########.fr       */
+/*   Updated: 2017/01/10 18:56:17 by epillot          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "ft_ls.h"
+#include <limits.h>
 
-static void	print_content(t_flist *list)
+static blkcnt_t	get_total(t_flist *list)
 {
+	int	size;
+
+	if (!list)
+		return (0);
+	size = list->nb_blocks;
+	return (get_total(list->left) + get_total(list->right) + size);
+}
+
+static void		print_content(t_flist *list, char *str, int tab[6])
+{
+	char	link[PATH_MAX];
+	int		ret;
+	char	*s;
+
 	if (!list)
 		return ;
 	if (list->left)
-		print_content(list->left);
-	ft_printf("%s%5hu %-8s %s %7lld %s %s\n", list->perm, list->nb_link, list->usr_id, list->grp_id, list->size, list->time, list->file_name);
+		print_content(list->left, str, tab);
+	ft_printf("%s %*hu ", list->perm, tab[0], list->nb_link);
+	ft_printf("%-*s %-*s ", tab[1], list->usr_id, tab[2], list->grp_id);
+	if (*list->perm == 'c' || *list->perm == 'b')
+		ft_printf("%*d,%*d ", tab[3], major(list->rdev), tab[4], minor(list->rdev));
+	else
+		ft_printf("%*lld ", tab[5], list->size);
+	ft_printf("%s %s", list->time, list->file_name);
+	if (*list->perm == 'l')
+	{
+		ft_sprintf(&s, "%s/%s", str, list->file_name);
+		ret = readlink(s, link, PATH_MAX);
+		link[ret] = '\0';
+		ft_printf(" -> %s\n", link);
+	}
+	else
+		ft_putchar('\n');
 	if (list->right)
-		print_content(list->right);
+		print_content(list->right, str, tab);
 }
 
-int			main(int ac, char **av)
+int				main(int ac, char **av)
 {
-	t_lsopt		option;
+	t_lsopt		opt;
 	int			i;
 	t_flist		*list;
+	int			tab[6];
 
-	i = get_option_ls(ac, av, &option);
-//	ft_printf("ok1\n");
-	get_file_list(av[i], option, &list);
-//	ft_printf("ok2\n");
-	print_content(list);
+	list = NULL;
+	ft_bzero(tab, sizeof(tab));
+	i = get_option_ls(ac, av, &opt);
+	get_file_list(av[i], opt, &list);
+	get_width(list, tab);
+	ft_printf("total %lld\n", get_total(list));
+	print_content(list, av[i], tab);
 }

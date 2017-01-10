@@ -6,7 +6,7 @@
 /*   By: epillot <marvin@42.fr>                     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2017/01/04 15:53:35 by epillot           #+#    #+#             */
-/*   Updated: 2017/01/06 17:00:00 by epillot          ###   ########.fr       */
+/*   Updated: 2017/01/10 18:34:14 by epillot          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -44,15 +44,19 @@ typedef struct	s_flist
 	char				*usr_id;
 	char				*grp_id;
 	off_t				size;
+	time_t				mtime;
 	char				*time;
 	char				file_name[256];
+	blkcnt_t			nb_blocks;
+	dev_t				rdev;
 	struct s_flist		*right;
 	struct s_flist		*left;
 }				t_flist;
 
-void	get_right(mode_t st_mode, char right[11]);
+void	get_perm(mode_t st_mode, char right[11]);
 char	*get_time(time_t time);
 int		get_option_ls(int ac, char **av, t_lsopt *opt);
 int		get_file_list(char *file, t_lsopt opt, t_flist **list);
+void	get_width(t_flist *list, int tab[6]);
 
 #endif
