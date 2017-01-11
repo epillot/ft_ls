@@ -6,7 +6,7 @@
 /*   By: epillot <marvin@42.fr>                     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2017/01/04 15:53:35 by epillot           #+#    #+#             */
-/*   Updated: 2017/01/10 18:34:14 by epillot          ###   ########.fr       */
+/*   Updated: 2017/01/11 19:06:58 by epillot          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -22,6 +22,8 @@
 # include <pwd.h>
 # include <grp.h>
 # include <time.h>
+# include <errno.h>
+# include <limits.h>
 
 typedef struct dirent	t_dirent;
 typedef struct stat		t_stat;
@@ -53,10 +55,13 @@ typedef struct	s_flist
 	struct s_flist		*left;
 }				t_flist;
 
-void	get_perm(mode_t st_mode, char right[11]);
-char	*get_time(time_t time);
-int		get_option_ls(int ac, char **av, t_lsopt *opt);
-int		get_file_list(char *file, t_lsopt opt, t_flist **list);
-void	get_width(t_flist *list, int tab[6]);
+int						get_option_ls(int ac, char **av, t_lsopt *opt);
+t_flist					*create_elem(char *file, t_stat buf);
+int						get_file_list2(char *file, t_stat buf, t_lsopt opt, t_flist **list);
+void					get_width(t_flist *list, int tab[6]);
+void					print_content(t_flist *list, t_lsopt opt, char *str, int tab[6]);
+void					print_file(t_flist *list, char *str, t_lsopt opt);
+void					print_dir(t_flist *list, t_lsopt opt);
+int						get_file_list(char *file, t_lsopt opt, t_flist **list);
 
 #endif

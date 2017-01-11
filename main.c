@@ -6,51 +6,45 @@
 /*   By: epillot <marvin@42.fr>                     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2016/12/27 11:45:18 by epillot           #+#    #+#             */
-/*   Updated: 2017/01/10 18:56:17 by epillot          ###   ########.fr       */
+/*   Updated: 2017/01/11 19:47:13 by epillot          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "ft_ls.h"
-#include <limits.h>
 
-static blkcnt_t	get_total(t_flist *list)
+static void		get_arg_list_f(int ac, char **av, t_lsopt opt, t_flist **list)
 {
-	int	size;
+	int     i;
+	t_stat  buf;
 
-	if (!list)
-		return (0);
-	size = list->nb_blocks;
-	return (get_total(list->left) + get_total(list->right) + size);
+	i = 0;
+	while (i < ac)
+	{
+		if (lstat(av[i], &buf) != -1)
+			if (!S_ISDIR(buf.st_mode))
+				get_file_list2(av[i], buf, opt, list);
+		i++;
+	}
 }
 
-static void		print_content(t_flist *list, char *str, int tab[6])
+static void		get_arg_list_d(int ac, char **av, t_lsopt opt, t_flist **list)
 {
-	char	link[PATH_MAX];
-	int		ret;
-	char	*s;
+	int		i;
+	t_stat	buf;
 
-	if (!list)
-		return ;
-	if (list->left)
-		print_content(list->left, str, tab);
-	ft_printf("%s %*hu ", list->perm, tab[0], list->nb_link);
-	ft_printf("%-*s %-*s ", tab[1], list->usr_id, tab[2], list->grp_id);
-	if (*list->perm == 'c' || *list->perm == 'b')
-		ft_printf("%*d,%*d ", tab[3], major(list->rdev), tab[4], minor(list->rdev));
-	else
-		ft_printf("%*lld ", tab[5], list->size);
-	ft_printf("%s %s", list->time, list->file_name);
-	if (*list->perm == 'l')
+	i = 0;
+	if (ac == 0)
 	{
-		ft_sprintf(&s, "%s/%s", str, list->file_name);
-		ret = readlink(s, link, PATH_MAX);
-		link[ret] = '\0';
-		ft_printf(" -> %s\n", link);
+		av[0] = ".";
+		ac = 1;
 	}
-	else
-		ft_putchar('\n');
-	if (list->right)
-		print_content(list->right, str, tab);
+	while (i < ac)
+	{
+		if (lstat(av[i], &buf) != -1)
+			if (S_ISDIR(buf.st_mode))
+				get_file_list2(av[i], buf, opt, list);
+		i++;
+	}
 }
 
 int				main(int ac, char **av)
@@ -58,13 +52,16 @@ int				main(int ac, char **av)
 	t_lsopt		opt;
 	int			i;
 	t_flist		*list;
-	int			tab[6];
 
 	list = NULL;
-	ft_bzero(tab, sizeof(tab));
 	i = get_option_ls(ac, av, &opt);
-	get_file_list(av[i], opt, &list);
-	get_width(list, tab);
-	ft_printf("total %lld\n", get_total(list));
-	print_content(list, av[i], tab);
+	ac -= i;
+	av += i;
+	get_arg_list_f(ac, av, opt, &list);
+	print_file(list, list->file_name, opt);
+	if (list)
+		ft_putchar('\n');
+	list = NULL;
+	get_arg_list_d(ac, av, opt, &list);
+	print_dir(list, opt);
 }

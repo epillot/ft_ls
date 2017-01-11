@@ -1,12 +1,12 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   get_perm.c                                         :+:      :+:    :+:   */
+/*   create_elem.c                                      :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: epillot <marvin@42.fr>                     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2017/01/09 15:25:20 by epillot           #+#    #+#             */
-/*   Updated: 2017/01/10 14:32:47 by epillot          ###   ########.fr       */
+/*   Created: 2017/01/11 12:43:52 by epillot           #+#    #+#             */
+/*   Updated: 2017/01/11 18:16:49 by epillot          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -30,7 +30,7 @@ static char	get_type(mode_t st_mode)
 		return ('-');
 }
 
-void		get_perm(mode_t st_mode, char perm[11])
+static void	get_perm(mode_t st_mode, char perm[11])
 {
 	perm[10] = '\0';
 	perm[0] = get_type(st_mode);
@@ -49,4 +49,46 @@ void		get_perm(mode_t st_mode, char perm[11])
 		perm[6] = (perm[6] == 'x' ? 's' : 'S');
 	if (st_mode & S_ISVTX)
 		perm[9] = (perm[9] == 'x' ? 't' : 'T');
+}
+
+static char	*get_time(time_t mtime)
+{
+	time_t	actual_time;
+	char	*s_time;
+	char	*output;
+
+	time(&actual_time);
+	s_time = ctime(&mtime);
+	if (!(output = ft_strsub(s_time, 4, 12)))
+		return (NULL);
+	if (actual_time - mtime >= 15811200)
+		ft_strncpy(output + 7, s_time + 19, 5);
+	return (output);
+}
+
+t_flist		*create_elem(char *file, t_stat buf)
+{
+	t_flist		*output;
+	t_passwd	*uid;
+	t_group		*gid;
+
+	if (!(output = (t_flist*)ft_memalloc(sizeof(t_flist))))
+		return (NULL);
+	if (!(uid = getpwuid(buf.st_uid)))
+		return (NULL);
+	if (!(gid = getgrgid(buf.st_gid)))
+		return (NULL);
+	get_perm(buf.st_mode, output->perm);
+	output->nb_link = buf.st_nlink;
+	output->usr_id = uid->pw_name;
+	output->grp_id = gid->gr_name;
+	output->size = buf.st_size;
+	output->mtime = buf.st_mtime;
+	output->nb_blocks = buf.st_blocks;
+	if (*output->perm == 'c' || *output->perm == 'b')
+		output->rdev = buf.st_rdev;
+	if (!(output->time = get_time(buf.st_mtime)))
+		return (NULL);
+	ft_strcpy(output->file_name, file);
+	return (output);
 }

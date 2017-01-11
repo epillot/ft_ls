@@ -6,7 +6,7 @@
 #    By: epillot <marvin@42.fr>                     +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2017/01/04 16:40:08 by epillot           #+#    #+#              #
-#    Updated: 2017/01/10 16:08:42 by epillot          ###   ########.fr        #
+#    Updated: 2017/01/11 19:07:26 by epillot          ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -15,11 +15,14 @@ NAME = ft_ls
 FLAG = -Wall -Wextra -Werror
 
 SRC = main.c\
-	  get_perm.c\
-	  get_time.c\
+	  create_elem.c\
 	  get_option_ls.c\
+	  get_file_list2.c\
 	  get_file_list.c\
 	  get_width.c\
+	  print_content.c\
+	  print_file.c\
+	  print_dir.c\
 
 OBJ = $(SRC:.c=.o)
 
