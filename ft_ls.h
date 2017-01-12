@@ -43,12 +43,12 @@ typedef struct	s_flist
 {
 	char				perm[11];
 	nlink_t				nb_link;
-	char				*usr_id;
-	char				*grp_id;
+	char				usr_id[NAME_MAX];
+	char				grp_id[NAME_MAX];
 	off_t				size;
 	time_t				mtime;
 	char				*time;
-	char				file_name[256];
+	char				file_name[NAME_MAX];
 	blkcnt_t			nb_blocks;
 	dev_t				rdev;
 	struct s_flist		*right;
