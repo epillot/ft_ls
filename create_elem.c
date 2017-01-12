@@ -80,8 +80,8 @@ t_flist		*create_elem(char *file, t_stat buf)
 		return (NULL);
 	get_perm(buf.st_mode, output->perm);
 	output->nb_link = buf.st_nlink;
-	output->usr_id = uid->pw_name;
-	output->grp_id = gid->gr_name;
+	ft_strncpy(output->usr_id, uid->pw_name, NAME_MAX);
+	ft_strncpy(output->grp_id, gid->gr_name, NAME_MAX);
 	output->size = buf.st_size;
 	output->mtime = buf.st_mtime;
 	output->nb_blocks = buf.st_blocks;
@@ -89,6 +89,6 @@ t_flist		*create_elem(char *file, t_stat buf)
 		output->rdev = buf.st_rdev;
 	if (!(output->time = get_time(buf.st_mtime)))
 		return (NULL);
-	ft_strcpy(output->file_name, file);
+	ft_strncpy(output->file_name, file, NAME_MAX);
 	return (output);
 }
