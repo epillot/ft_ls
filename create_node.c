@@ -1,12 +1,12 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   create_elem.c                                      :+:      :+:    :+:   */
+/*   create_node.c                                      :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: epillot <marvin@42.fr>                     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2017/01/11 12:43:52 by epillot           #+#    #+#             */
-/*   Updated: 2017/01/11 18:16:49 by epillot          ###   ########.fr       */
+/*   Created: 2017/01/12 17:18:34 by epillot           #+#    #+#             */
+/*   Updated: 2017/01/12 19:36:44 by epillot          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -66,7 +66,7 @@ static char	*get_time(time_t mtime)
 	return (output);
 }
 
-t_flist		*create_elem(char *file, t_stat buf)
+t_flist		*create_node(char *file, t_stat buf, char *path)
 {
 	t_flist		*output;
 	t_passwd	*uid;
@@ -80,15 +80,15 @@ t_flist		*create_elem(char *file, t_stat buf)
 		return (NULL);
 	get_perm(buf.st_mode, output->perm);
 	output->nb_link = buf.st_nlink;
-	output->usr_id = uid->pw_name;
-	output->grp_id = gid->gr_name;
+	ft_strncpy(output->usr_id, uid->pw_name, NAME_MAX + 1);
+	ft_strncpy(output->grp_id, gid->gr_name, NAME_MAX + 1);
 	output->size = buf.st_size;
 	output->mtime = buf.st_mtime;
 	output->nb_blocks = buf.st_blocks;
-	if (*output->perm == 'c' || *output->perm == 'b')
-		output->rdev = buf.st_rdev;
+	output->rdev = buf.st_rdev;
 	if (!(output->time = get_time(buf.st_mtime)))
 		return (NULL);
-	ft_strcpy(output->file_name, file);
+	ft_strncpy(output->file_name, file, NAME_MAX + 1);
+	ft_strncpy(output->path, path, PATH_MAX);
 	return (output);
 }

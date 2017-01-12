@@ -6,7 +6,7 @@
 #    By: epillot <marvin@42.fr>                     +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2017/01/04 16:40:08 by epillot           #+#    #+#              #
-#    Updated: 2017/01/11 19:07:26 by epillot          ###   ########.fr        #
+#    Updated: 2017/01/12 17:20:46 by epillot          ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -15,9 +15,9 @@ NAME = ft_ls
 FLAG = -Wall -Wextra -Werror
 
 SRC = main.c\
-	  create_elem.c\
+	  create_node.c\
 	  get_option_ls.c\
-	  get_file_list2.c\
+	  link_node.c\
 	  get_file_list.c\
 	  get_width.c\
 	  print_content.c\

@@ -6,101 +6,72 @@
 /*   By: epillot <marvin@42.fr>                     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2017/01/05 19:14:07 by epillot           #+#    #+#             */
-/*   Updated: 2017/01/11 19:08:12 by epillot          ###   ########.fr       */
+/*   Updated: 2017/01/12 20:48:04 by epillot          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "ft_ls.h"
 
-static void		link_node_file_name(t_flist *elem, t_flist **root)
+static void		get_path(char *file, char *parent, char path[PATH_MAX])
 {
-	t_flist	*tmp;
-
-	tmp = *root;
-	if (ft_strcmp(elem->file_name, tmp->file_name) < 0)
+	if (*parent)
 	{
-		*root = (*root)->left;
-		if (!*root)
-			tmp->left = elem;
+		ft_strcpy(path, parent);
+		if (path[ft_strlen(parent) - 1] != '/')
+			path[ft_strlen(parent)] = '/';
+		ft_strcpy(path + ft_strlen(parent) + 1, file);
 	}
 	else
-	{
-		*root = (*root)->right;
-		if (!*root)
-			tmp->right = elem;
-	}
+		ft_strcpy(path, file);
 }
 
-static void		link_node(t_flist *elem, t_flist **root)
-{
-	t_flist	*tmp;
-
-	tmp = *root;
-	if (*root)
-		while (tmp)
-			link_node_file_name(elem, &tmp);
-	else
-		*root = elem;
-}
-
-static void		link_node_time(t_flist *elem, t_flist **root)
-{
-	t_flist	*tmp1;
-	t_flist	*tmp2;
-
-	tmp1 = *root;
-	if (*root)
-	{
-		while (tmp1)
-		{
-			tmp2 = tmp1;
-			if (elem->mtime == tmp1->mtime)
-				link_node_file_name(elem, &tmp1);
-			else if (elem->mtime > tmp1->mtime)
-			{
-				tmp1 = tmp1->left;
-				if (!tmp1)
-					tmp2->left = elem;
-			}
-			else
-			{
-				tmp1 = tmp1->right;
-				if (!tmp1)
-					tmp2->right = elem;
-			}
-		}
-	}
-	else
-		*root = elem;
-}
-
-int				get_file_list(char *file, t_lsopt opt, t_flist **list)
+int				get_file_list(char *file, t_lsopt opt, t_flist **list, t_ll **l)
 {
 	DIR			*dir;
 	t_dirent	*info;
 	t_stat		buf;
-	char		*path;
+	char		path[PATH_MAX];
 	t_flist		*elem;
+	t_ll		*tmp;
+	t_ll		*tmp2;
 
 	if (!(dir = opendir(file)))
 	{
 		ft_printf("ft_ls: %s: %s\n", file, strerror(errno));
-		exit(EXIT_FAILURE);
+		return (-1);
 	}
 	while ((info = readdir(dir)))
 	{
-		if (ft_sprintf(&path, "%s/%s", file, info->d_name) == -1)
-			return (-1);
-		if (lstat(path, &buf) != -1)
-		{	
-			if (!(elem = create_elem(info->d_name, buf)))
-				return (-1);
-			if (opt.t == 1)
-				link_node_time(elem, list);
-			else
-				link_node(elem, list);
+		if (opt.a || info->d_name[0] != '.')
+		{
+			get_path(info->d_name, file, path);
+			if (lstat(path, &buf) != -1)
+			{	
+				if (!(elem = create_node(info->d_name, buf, path)))
+					return (-1);
+				if (*list)
+					link_node(list, elem, opt);
+				else
+					*list = elem;
+				if (opt.rec && *elem->perm == 'd' && ft_strcmp(info->d_name, ".") && ft_strcmp(info->d_name, ".."))
+				{
+					if (*l)
+					{
+						tmp = *l;
+						tmp2 = ft_memalloc(sizeof(l));
+						tmp2->list = elem;
+						while (tmp->next)
+							tmp = tmp->next;
+						tmp->next = tmp2;
+					}
+					else
+					{
+						*l = ft_memalloc(sizeof(l));
+						(*l)->list = elem;
+					}
+				}
+			}
 		}
-		free(path);
 	}
 	return (1);
 }
