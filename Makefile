@@ -6,7 +6,7 @@
 #    By: epillot <marvin@42.fr>                     +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2017/01/04 16:40:08 by epillot           #+#    #+#              #
-#    Updated: 2017/01/12 17:20:46 by epillot          ###   ########.fr        #
+#    Updated: 2017/01/13 19:36:59 by epillot          ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -17,12 +17,13 @@ FLAG = -Wall -Wextra -Werror
 SRC = main.c\
 	  create_node.c\
 	  get_option_ls.c\
-	  link_node.c\
+	  add_node.c\
 	  get_file_list.c\
 	  get_width.c\
 	  print_content.c\
 	  print_file.c\
 	  print_dir.c\
+	  free_list.c\
 
 OBJ = $(SRC:.c=.o)
 

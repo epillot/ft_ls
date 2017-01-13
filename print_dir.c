@@ -6,18 +6,11 @@
 /*   By: epillot <marvin@42.fr>                     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2017/01/11 17:33:08 by epillot           #+#    #+#             */
-/*   Updated: 2017/01/12 20:48:07 by epillot          ###   ########.fr       */
+/*   Updated: 2017/01/13 19:28:19 by epillot          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "ft_ls.h"
-
-static int		list_size(t_flist *list)
-{
-	if (!list)
-		return (0);
-	return (1 + list_size(list->left) + list_size(list->right) + list_size(list->next));
-}
 
 static blkcnt_t	get_total(t_flist *list)
 {
@@ -29,66 +22,61 @@ static blkcnt_t	get_total(t_flist *list)
 	return (get_total(list->left) + get_total(list->right) + size);
 }
 
-static void		print_std(t_flist *list, t_lsopt opt, int *size, int *printed)
+static void		print_std(t_flist *list, t_lsopt opt, int *printed, int nb)
 {
 	t_flist		*new;
-	t_ll		*l;
 
 	new = NULL;
-	l = NULL;
 	if (!list)
 		return ;
 	if (list->left)
-		print_std(list->left, opt, size, printed);
-	if ((get_file_list(list->path, opt, &new, &l) == -1))
-		return ;
-	if (*size > 1 || *printed > 0)
-		ft_printf("%s:\n", list->path);
-	if (opt.l)
-		ft_printf("total %lld\n", get_total(new));
-	print_file(new, opt);
-	(*printed)++;
-	if (--(*size) > 0)
-		ft_putchar('\n');
-	while (l != NULL)
+		print_std(list->left, opt, printed, nb);
+	if (!nb || (S_ISDIR(list->mode) && ft_strcmp(list->file.name, ".") && ft_strcmp(list->file.name, "..")))
 	{
-		print_dir(l->list, opt, printed);
-		l = l->next;
+		if ((get_file_list(list->file, opt, &new) == -1))
+			return ;
+		if (*printed > 0 && nb)
+			ft_printf("\n%s:\n", list->file.path);
+		else if (nb)
+			ft_printf("%s:\n", list->file.path);
+		else if (*printed > 0)
+			ft_putchar('\n');
+		if (opt.l)
+			ft_printf("total %lld\n", get_total(new));
+		print_file(new, opt);
+		(*printed)++;
+		if (opt.rec)
+			print_std(new, opt, printed, 1);
+		free_list(&new);
 	}
 	if (list->right)
-		print_std(list->right, opt, size, printed);
+		print_std(list->right, opt, printed, nb);
 }
 
-static void		print_rev(t_flist *list, t_lsopt opt, int *size, int *printed)
+static void		print_rev(t_flist *list, t_lsopt opt, int *printed)
 {
 	t_flist		*new;
-	t_ll		*l;
 
 	new = NULL;
 	if (!list)
 		return ;
 	if (list->right)
-		print_rev(list->right, opt, size, printed);
-	get_file_list(list->file_name, opt, &new, &l);
-	if (*size > 1 || *printed > 0)
-		ft_printf("%s:\n", list->file_name);
+		print_rev(list->right, opt, printed);
+	get_file_list(list->file, opt, &new);
+	if (*printed > 0)
+		ft_printf("%s:\n", list->file.name);
 	if (opt.l)
 		ft_printf("total %lld\n", get_total(new));
 	print_file(new, opt);
 	(*printed)++;
-	if (--(*size) > 0)
-		ft_putchar('\n');
 	if (list->left)
-		print_rev(list->left, opt, size, printed);
+		print_rev(list->left, opt, printed);
 }
 
-void			print_dir(t_flist *list, t_lsopt opt, int *printed)
+void			print_dir(t_flist *list, t_lsopt opt, int *printed, int nb)
 {
-	int		size;
-
-	size = list_size(list);
 	if (opt.r)
-		print_rev(list, opt, &size, printed);
+		print_rev(list, opt, printed);
 	else
-		print_std(list, opt, &size, printed);
+		print_std(list, opt, printed, nb);
 }

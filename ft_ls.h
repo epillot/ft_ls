@@ -6,7 +6,7 @@
 /*   By: epillot <marvin@42.fr>                     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2017/01/04 15:53:35 by epillot           #+#    #+#             */
-/*   Updated: 2017/01/12 20:35:23 by epillot          ###   ########.fr       */
+/*   Updated: 2017/01/13 19:00:36 by epillot          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -39,37 +39,39 @@ typedef struct	s_lsopt
 	int					t;
 }				t_lsopt;
 
+typedef struct	s_file
+{
+	char				name[NAME_MAX + 1];
+	char				path[PATH_MAX];
+}				t_file;
+
 typedef struct	s_flist
 {
+	t_file				file;
 	char				perm[11];
+	mode_t				mode;
 	nlink_t				nb_link;
 	char				usr_id[NAME_MAX + 1];
 	char				grp_id[NAME_MAX + 1];
 	off_t				size;
 	time_t				mtime;
 	char				*time;
-	char				file_name[NAME_MAX + 1];
-	char				path[PATH_MAX];
+//	char				file_name[NAME_MAX + 1];
+//	char				path[PATH_MAX];
 	blkcnt_t			nb_blocks;
 	dev_t				rdev;
 	struct s_flist		*right;
 	struct s_flist		*left;
-	struct s_flist		*next;
 }				t_flist;
 
-typedef struct	s_ll
-{
-	t_flist		*list;
-	struct s_ll	*next;
-}				t_ll;
-
 int						get_option_ls(int ac, char **av, t_lsopt *opt);
-t_flist					*create_node(char *file, t_stat buf, char *path);
-void					link_node(t_flist **root, t_flist *elem, t_lsopt opt);
+t_flist					*create_node(t_file file, t_stat buf);
+void					add_node(t_file file, t_stat buf, t_lsopt opt, t_flist **list);
 void					get_width(t_flist *list, int tab[6]);
-int						get_file_list(char *file, t_lsopt opt, t_flist **list, t_ll **l);
+int						get_file_list(t_file file, t_lsopt opt, t_flist **list);
 void					print_content(t_flist *list, t_lsopt opt, int tab[6]);
 void					print_file(t_flist *list, t_lsopt opt);
-void					print_dir(t_flist *list, t_lsopt opt, int *printed);
+void					print_dir(t_flist *list, t_lsopt opt, int *printed, int nb);
+void					free_list(t_flist **list);
 
 #endif

@@ -6,7 +6,7 @@
 /*   By: epillot <marvin@42.fr>                     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2017/01/05 19:14:07 by epillot           #+#    #+#             */
-/*   Updated: 2017/01/12 20:48:04 by epillot          ###   ########.fr       */
+/*   Updated: 2017/01/13 19:28:44 by epillot          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -25,53 +25,28 @@ static void		get_path(char *file, char *parent, char path[PATH_MAX])
 		ft_strcpy(path, file);
 }
 
-int				get_file_list(char *file, t_lsopt opt, t_flist **list, t_ll **l)
+int				get_file_list(t_file file, t_lsopt opt, t_flist **list)
 {
 	DIR			*dir;
 	t_dirent	*info;
 	t_stat		buf;
-	char		path[PATH_MAX];
-	t_flist		*elem;
-	t_ll		*tmp;
-	t_ll		*tmp2;
+	t_file		new;
 
-	if (!(dir = opendir(file)))
+	if (!(dir = opendir(file.path)))
 	{
-		ft_printf("ft_ls: %s: %s\n", file, strerror(errno));
+		ft_printf("ft_ls: %s: %s\n", file.path, strerror(errno));
 		return (-1);
 	}
 	while ((info = readdir(dir)))
 	{
 		if (opt.a || info->d_name[0] != '.')
 		{
-			get_path(info->d_name, file, path);
-			if (lstat(path, &buf) != -1)
-			{	
-				if (!(elem = create_node(info->d_name, buf, path)))
-					return (-1);
-				if (*list)
-					link_node(list, elem, opt);
-				else
-					*list = elem;
-				if (opt.rec && *elem->perm == 'd' && ft_strcmp(info->d_name, ".") && ft_strcmp(info->d_name, ".."))
-				{
-					if (*l)
-					{
-						tmp = *l;
-						tmp2 = ft_memalloc(sizeof(l));
-						tmp2->list = elem;
-						while (tmp->next)
-							tmp = tmp->next;
-						tmp->next = tmp2;
-					}
-					else
-					{
-						*l = ft_memalloc(sizeof(l));
-						(*l)->list = elem;
-					}
-				}
-			}
+			ft_strcpy(new.name, info->d_name);
+			get_path(new.name, file.path, new.path);
+			if (lstat(new.path, &buf) != -1)
+				add_node(new, buf, opt, list);
 		}
 	}
+	closedir(dir);
 	return (1);
 }

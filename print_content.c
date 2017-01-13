@@ -6,7 +6,7 @@
 /*   By: epillot <marvin@42.fr>                     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2017/01/11 16:09:10 by epillot           #+#    #+#             */
-/*   Updated: 2017/01/12 16:21:59 by epillot          ###   ########.fr       */
+/*   Updated: 2017/01/13 19:09:44 by epillot          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -23,10 +23,10 @@ static void	print_content_l(t_flist *list, int tab[6])
 		ft_printf("%*d,%*d ", tab[3], major(list->rdev), tab[4], minor(list->rdev));
 	else
 		ft_printf("%*lld ", tab[5], list->size);
-	ft_printf("%s %s", list->time, list->file_name);
+	ft_printf("%s %s", list->time, list->file.name);
 	if (*list->perm == 'l')
 	{
-		ret = readlink(list->path, link, PATH_MAX);
+		ret = readlink(list->file.path, link, PATH_MAX);
 		link[ret] = '\0';
 		ft_printf(" -> %s\n", link);
 	}
@@ -39,5 +39,5 @@ void		print_content(t_flist *list, t_lsopt opt, int tab[6])
 	if (opt.l)
 		print_content_l(list, tab);
 	else
-		ft_printf("%s\n", list->file_name);
+		ft_printf("%s\n", list->file.name);
 }

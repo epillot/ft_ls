@@ -6,7 +6,7 @@
 /*   By: epillot <marvin@42.fr>                     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2017/01/12 17:18:34 by epillot           #+#    #+#             */
-/*   Updated: 2017/01/12 19:36:44 by epillot          ###   ########.fr       */
+/*   Updated: 2017/01/13 19:29:09 by epillot          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -66,7 +66,7 @@ static char	*get_time(time_t mtime)
 	return (output);
 }
 
-t_flist		*create_node(char *file, t_stat buf, char *path)
+t_flist		*create_node(t_file file, t_stat buf)
 {
 	t_flist		*output;
 	t_passwd	*uid;
@@ -79,6 +79,7 @@ t_flist		*create_node(char *file, t_stat buf, char *path)
 	if (!(gid = getgrgid(buf.st_gid)))
 		return (NULL);
 	get_perm(buf.st_mode, output->perm);
+	output->mode = buf.st_mode;
 	output->nb_link = buf.st_nlink;
 	ft_strncpy(output->usr_id, uid->pw_name, NAME_MAX + 1);
 	ft_strncpy(output->grp_id, gid->gr_name, NAME_MAX + 1);
@@ -88,7 +89,7 @@ t_flist		*create_node(char *file, t_stat buf, char *path)
 	output->rdev = buf.st_rdev;
 	if (!(output->time = get_time(buf.st_mtime)))
 		return (NULL);
-	ft_strncpy(output->file_name, file, NAME_MAX + 1);
-	ft_strncpy(output->path, path, PATH_MAX);
+	ft_strncpy(output->file.name, file.name, NAME_MAX + 1);
+	ft_strncpy(output->file.path, file.path, PATH_MAX);
 	return (output);
 }
