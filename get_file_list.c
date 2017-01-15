@@ -12,9 +12,9 @@
 
 #include "ft_ls.h"
 
-static void		get_path(char *file, char *parent, char path[PATH_MAX])
+static int		get_path(char *file, char *parent, char path[PATH_MAX])
 {
-	if (*parent)
+/*	if (*parent)
 	{
 		ft_strcpy(path, parent);
 		if (path[ft_strlen(parent) - 1] != '/')
@@ -22,29 +22,67 @@ static void		get_path(char *file, char *parent, char path[PATH_MAX])
 		ft_strcpy(path + ft_strlen(parent) + 1, file);
 	}
 	else
-		ft_strcpy(path, file);
+		ft_strcpy(path, file);*/
+	int i = 0;
+	while (i < PATH_MAX && parent[i])
+	{
+		path[i] = parent[i];
+		i++;
+	}
+	if (i < PATH_MAX && path[i - 1] != '/')
+		path[i++] = '/';
+	if (PATH_MAX - i <= (int)ft_strlen(file))
+	{
+		errno = ENAMETOOLONG;
+		ft_putstr_fd("ft_ls: ", 2); //%s: %s\n", file, strerror(errno));
+		ft_putstr_fd(file, 2);
+		ft_putchar_fd(' ', 2);
+		ft_putendl_fd(strerror(errno), 2);
+		return (0);
+	}
+	else
+	{
+		while (*file)
+			path[i++] = *file++;
+		path[i] = '\0';
+		return (1);
+	}
 }
 
-int				get_file_list(t_file file, t_lsopt opt, t_flist **list)
+int				get_file_list(char *file, char *path, t_lsopt opt, t_flist **list)
 {
 	DIR			*dir;
 	t_dirent	*info;
 	t_stat		buf;
 	t_file		new;
 
-	if (!(dir = opendir(file.path)))
+	if (!(dir = opendir(path)))
 	{
-		ft_printf("ft_ls: %s: %s\n", file.path, strerror(errno));
+		ft_putstr_fd("ft_ls: ", 2); //%s: %s\n", file, strerror(errno));
+                ft_putstr_fd(file, 2);
+                ft_putstr_fd(": ", 2);
+                ft_putendl_fd(strerror(errno), 2);
 		return (-1);
 	}
 	while ((info = readdir(dir)))
 	{
 		if (opt.a || info->d_name[0] != '.')
 		{
-			ft_strcpy(new.name, info->d_name);
-			get_path(new.name, file.path, new.path);
-			if (lstat(new.path, &buf) != -1)
-				add_node(new, buf, opt, list);
+			ft_strncpy(new.name, info->d_name, NAME_MAX + 1);
+			//new.name = ft_strdup(info->d_name);
+			if (get_path(new.name, path, new.path))
+			{
+				if (lstat(new.path, &buf) != -1)
+					add_node(new, buf, opt, list);
+				else
+				{
+					ft_putstr_fd("ft_ls: ", 2);
+					ft_putstr_fd(new.name, 2);
+					ft_putchar_fd(' ', 2);
+					ft_putendl_fd(strerror(errno), 2);
+					ft_putchar_fd('\n', 2);
+				}
+			}
 		}
 	}
 	closedir(dir);

@@ -81,15 +81,19 @@ t_flist		*create_node(t_file file, t_stat buf)
 	get_perm(buf.st_mode, output->perm);
 	output->mode = buf.st_mode;
 	output->nb_link = buf.st_nlink;
-	ft_strncpy(output->usr_id, uid->pw_name, NAME_MAX + 1);
-	ft_strncpy(output->grp_id, gid->gr_name, NAME_MAX + 1);
+	output->usr_id = ft_strdup(uid->pw_name);
+	output->grp_id = ft_strdup(gid->gr_name);
+	//ft_strncpy(output->usr_id, uid->pw_name, NAME_MAX + 1);
+	//ft_strncpy(output->grp_id, gid->gr_name, NAME_MAX + 1);
 	output->size = buf.st_size;
 	output->mtime = buf.st_mtime;
 	output->nb_blocks = buf.st_blocks;
 	output->rdev = buf.st_rdev;
 	if (!(output->time = get_time(buf.st_mtime)))
 		return (NULL);
-	ft_strncpy(output->file.name, file.name, NAME_MAX + 1);
-	ft_strncpy(output->file.path, file.path, PATH_MAX);
+	output->name = ft_strdup(file.name);
+	output->path = ft_strdup(file.path);
+	//ft_strncpy(output->file.name, file.name, NAME_MAX + 1);
+	//ft_strncpy(output->file.path, file.path, PATH_MAX);
 	return (output);
 }

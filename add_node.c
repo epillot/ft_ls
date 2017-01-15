@@ -17,7 +17,7 @@ static void		link_node_ascii_aux(t_flist *elem, t_flist **node)
 	t_flist	*tmp;
 
 	tmp = *node;
-	if (ft_strcmp(elem->file.name, tmp->file.name) < 0)
+	if (ft_strcmp(elem->name, tmp->name) < 0)
 	{
 		*node = (*node)->left;
 		if (!*node)

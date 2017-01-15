@@ -20,6 +20,11 @@ void	free_list(t_flist **list)
 			free_list(&(*list)->left);
 		if ((*list)->right)
 			free_list(&(*list)->right);
+		free((*list)->name);
+		free((*list)->path);
+		free((*list)->usr_id);
+		free((*list)->grp_id);
+		free((*list)->time);
 		free(*list);
 		*list = NULL;
 	}

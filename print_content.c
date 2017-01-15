@@ -14,8 +14,7 @@
 
 static void	print_content_l(t_flist *list, int tab[6])
 {
-	int		ret;
-	char	link[PATH_MAX];
+	char	link[NAME_MAX + 1];
 
 	ft_printf("%s %*hu ", list->perm, tab[0], list->nb_link);
 	ft_printf("%-*s %-*s ", tab[1], list->usr_id, tab[2], list->grp_id);
@@ -23,11 +22,11 @@ static void	print_content_l(t_flist *list, int tab[6])
 		ft_printf("%*d,%*d ", tab[3], major(list->rdev), tab[4], minor(list->rdev));
 	else
 		ft_printf("%*lld ", tab[5], list->size);
-	ft_printf("%s %s", list->time, list->file.name);
+	ft_printf("%s %s", list->time, list->name);
 	if (*list->perm == 'l')
 	{
-		ret = readlink(list->file.path, link, PATH_MAX);
-		link[ret] = '\0';
+		ft_bzero(link, NAME_MAX + 1);
+		readlink(list->path, link, NAME_MAX);
 		ft_printf(" -> %s\n", link);
 	}
 	else
@@ -39,5 +38,5 @@ void		print_content(t_flist *list, t_lsopt opt, int tab[6])
 	if (opt.l)
 		print_content_l(list, tab);
 	else
-		ft_printf("%s\n", list->file.name);
+		ft_printf("%s\n", list->name);
 }

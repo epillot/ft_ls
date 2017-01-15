@@ -12,18 +12,31 @@
 
 #include "ft_ls.h"
 
-/*static int		add_node_arg(char *file, t_stat buf, t_lsopt opt, t_flist **list)
+static int		init_file(char *param, t_file *file, int err)
 {
-	t_flist	*elem;
-
-	if (!(elem = create_node(file, buf, file)))
+	int	i;
+	
+	i = 0;
+	while (i < NAME_MAX + 1 && param[i])
+	{
+		file->name[i] = param[i];
+		file->path[i] = param[i];
+		i++;
+	}
+	if (i == NAME_MAX + 1 && err)
+	{
+		errno = ENAMETOOLONG;
+		ft_printf("ft_ls: %s: %s\n", param, strerror(errno));
 		return (0);
-	if (*list)
-		link_node(list, elem, opt);
-	else
-		*list = elem;
-	return (1);
-}*/
+	}
+	else if (i < NAME_MAX + 1)
+	{
+		file->name[i] = '\0';
+		file->path[i] = '\0';
+		return (1);
+	}	
+	return (0);
+}
 
 static void		get_arg_list_f(int ac, char **av, t_lsopt opt, t_flist **list)
 {
@@ -34,19 +47,20 @@ static void		get_arg_list_f(int ac, char **av, t_lsopt opt, t_flist **list)
 	i = 0;
 	while (i < ac)
 	{
-		ft_strcpy(file.name, av[i]);
-		ft_strcpy(file.path, av[i]);
-		if (opt.l)
+		if (init_file(av[i], &file, 1))
 		{
-			if (lstat(av[i], &buf) != -1)
-				if (!S_ISDIR(buf.st_mode))
-					add_node(file, buf, opt, list);
-		}
-		else
-		{
-			if (stat(av[i], &buf) != -1)
-				if (!S_ISDIR(buf.st_mode))
-					add_node(file, buf, opt, list);
+			if (opt.l)
+			{
+				if (lstat(av[i], &buf) != -1)
+					if (!S_ISDIR(buf.st_mode))
+						add_node(file, buf, opt, list);
+			}
+			else
+			{
+				if (stat(av[i], &buf) != -1)
+					if (!S_ISDIR(buf.st_mode))
+						add_node(file, buf, opt, list);
+			}
 		}
 		i++;
 	}
@@ -66,19 +80,20 @@ static void		get_arg_list_d(int ac, char **av, t_lsopt opt, t_flist **list)
 	}
 	while (i < ac)
 	{
-		ft_strcpy(file.name, av[i]);
-		ft_strcpy(file.path, av[i]);
-		if (opt.l)
+		if (init_file(av[i], &file, 0))
 		{
-			if (lstat(av[i], &buf) != -1)
-				if (S_ISDIR(buf.st_mode))
-					add_node(file, buf, opt, list);
-		}
-		else
-		{
-			if (stat(av[i], &buf) != -1)
-				if (S_ISDIR(buf.st_mode))
-					add_node(file, buf, opt, list);
+			if (opt.l)
+			{	
+				if (lstat(av[i], &buf) != -1)
+					if (S_ISDIR(buf.st_mode))
+						add_node(file, buf, opt, list);
+			}
+			else
+			{
+				if (stat(av[i], &buf) != -1)
+					if (S_ISDIR(buf.st_mode))
+						add_node(file, buf, opt, list);
+			}
 		}
 		i++;
 	}
