@@ -6,13 +6,13 @@
 /*   By: epillot <marvin@42.fr>                     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2017/01/12 17:11:27 by epillot           #+#    #+#             */
-/*   Updated: 2017/01/13 19:32:24 by epillot          ###   ########.fr       */
+/*   Updated: 2017/01/17 18:12:34 by epillot          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "ft_ls.h"
 
-static int		init_file(char *param, t_file *file, int err)
+static int		init_file(char *param, t_file *file)
 {
 	int	i;
 	
@@ -23,10 +23,10 @@ static int		init_file(char *param, t_file *file, int err)
 		file->path[i] = param[i];
 		i++;
 	}
-	if (i == NAME_MAX + 1 && err)
+	if (i == NAME_MAX + 1)
 	{
 		errno = ENAMETOOLONG;
-		ft_printf("ft_ls: %s: %s\n", param, strerror(errno));
+		ls_error(0, param);
 		return (0);
 	}
 	else if (i < NAME_MAX + 1)
@@ -38,35 +38,7 @@ static int		init_file(char *param, t_file *file, int err)
 	return (0);
 }
 
-static void		get_arg_list_f(int ac, char **av, t_lsopt opt, t_flist **list)
-{
-	int     i;
-	t_stat  buf;
-	t_file	file;
-
-	i = 0;
-	while (i < ac)
-	{
-		if (init_file(av[i], &file, 1))
-		{
-			if (opt.l)
-			{
-				if (lstat(av[i], &buf) != -1)
-					if (!S_ISDIR(buf.st_mode))
-						add_node(file, buf, opt, list);
-			}
-			else
-			{
-				if (stat(av[i], &buf) != -1)
-					if (!S_ISDIR(buf.st_mode))
-						add_node(file, buf, opt, list);
-			}
-		}
-		i++;
-	}
-}
-
-static void		get_arg_list_d(int ac, char **av, t_lsopt opt, t_flist **list)
+void			get_arg_list(int ac, char **av, t_lsopt opt, t_flist **list)
 {
 	int		i;
 	t_stat	buf;
@@ -80,19 +52,21 @@ static void		get_arg_list_d(int ac, char **av, t_lsopt opt, t_flist **list)
 	}
 	while (i < ac)
 	{
-		if (init_file(av[i], &file, 0))
+		if (init_file(av[i], &file))
 		{
 			if (opt.l)
-			{	
+			{
 				if (lstat(av[i], &buf) != -1)
-					if (S_ISDIR(buf.st_mode))
-						add_node(file, buf, opt, list);
+					add_node(file, buf, opt, list);
+				else
+					ls_error(0, av[i]);
 			}
 			else
 			{
 				if (stat(av[i], &buf) != -1)
-					if (S_ISDIR(buf.st_mode))
-						add_node(file, buf, opt, list);
+					add_node(file, buf, opt, list);
+				else
+					ls_error(0, av[i]);
 			}
 		}
 		i++;
@@ -104,22 +78,16 @@ int				main(int ac, char **av)
 	t_lsopt		opt;
 	int			i;
 	t_flist		*list;
-	int			printed;
 
 	list = NULL;
-	printed = 0;
 	i = get_option_ls(ac, av, &opt);
 	ac -= i;
 	av += i;
-	get_arg_list_f(ac, av, opt, &list);
-	if (list)
-	{
-		print_file(list, opt);
-		free_list(&list);
-		printed++;
-	}
-	get_arg_list_d(ac, av, opt, &list);
-	print_dir(list, opt, &printed, 0);
+	get_arg_list(ac, av, opt, &list);
+	opt.f_print = 1;
+	print_file(list, &opt, 0);
+	opt.d_print = 1;
+	print_dir(list, &opt, ac, 0);
 	free_list(&list);
 	return (0);
 }

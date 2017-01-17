@@ -6,7 +6,7 @@
 #    By: epillot <marvin@42.fr>                     +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2016/11/03 15:38:05 by epillot           #+#    #+#              #
-#    Updated: 2017/01/05 18:14:42 by epillot          ###   ########.fr        #
+#    Updated: 2017/01/17 12:49:38 by epillot          ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -94,6 +94,7 @@ SRC = ft_atoi.c\
 	  encode_unicode.c\
 	  ft_printf.c\
 	  ft_sprintf.c\
+	  ft_printf_fd.c\
 	  get_option.c\
 	  get_param.c\
 	  s_convert.c\

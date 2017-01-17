@@ -6,7 +6,7 @@
 /*   By: epillot <marvin@42.fr>                     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2016/12/06 14:04:58 by epillot           #+#    #+#             */
-/*   Updated: 2017/01/05 18:18:08 by epillot          ###   ########.fr       */
+/*   Updated: 2017/01/17 12:49:17 by epillot          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -70,6 +70,7 @@ void			s_convert(char **str, t_option st, va_list ap, int *size);
 char			*s_to_formated_string(char *s, t_option st, int *n);
 int				ft_printf(const char *format, ...);
 int				ft_sprintf(char **str, const char *format, ...);
+int				ft_printf_fd(int fd, const char *format, ...);
 void			encode_unicode(wint_t c, int *i, char *s);
 
 #endif

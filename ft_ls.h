@@ -6,7 +6,7 @@
 /*   By: epillot <marvin@42.fr>                     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2017/01/04 15:53:35 by epillot           #+#    #+#             */
-/*   Updated: 2017/01/13 19:00:36 by epillot          ###   ########.fr       */
+/*   Updated: 2017/01/17 18:19:51 by epillot          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -37,6 +37,9 @@ typedef struct	s_lsopt
 	int					a;
 	int					r;
 	int					t;
+	int					f_print;
+	int					d_print;
+	int					printed;
 }				t_lsopt;
 
 typedef struct	s_file
@@ -68,11 +71,13 @@ typedef struct	s_flist
 int						get_option_ls(int ac, char **av, t_lsopt *opt);
 t_flist					*create_node(t_file file, t_stat buf);
 void					add_node(t_file file, t_stat buf, t_lsopt opt, t_flist **list);
-void					get_width(t_flist *list, int tab[6]);
+void					get_width_and_tot(t_flist *list, t_lsopt opt, int tab[7]);
 int						get_file_list(char *name, char *path, t_lsopt opt, t_flist **list);
-void					print_content(t_flist *list, t_lsopt opt, int tab[6]);
-void					print_file(t_flist *list, t_lsopt opt);
-void					print_dir(t_flist *list, t_lsopt opt, int *printed, int nb);
+void					print_content(t_flist *list, t_lsopt opt, int tab[7]);
+void					print_file(t_flist *list, t_lsopt *opt, int dir);
+void					print_dir(t_flist *list, t_lsopt *opt, int size, int nb);
+void					print_dir_content(t_flist *list, t_lsopt *opt, int size);
+void					ls_error(int errnum, char *str);
 void					free_list(t_flist **list);
 
 #endif

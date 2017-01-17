@@ -6,7 +6,7 @@
 /*   By: epillot <marvin@42.fr>                     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2017/01/05 19:14:07 by epillot           #+#    #+#             */
-/*   Updated: 2017/01/13 19:28:44 by epillot          ###   ########.fr       */
+/*   Updated: 2017/01/17 16:51:53 by epillot          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -58,10 +58,7 @@ int				get_file_list(char *file, char *path, t_lsopt opt, t_flist **list)
 
 	if (!(dir = opendir(path)))
 	{
-		ft_putstr_fd("ft_ls: ", 2); //%s: %s\n", file, strerror(errno));
-                ft_putstr_fd(file, 2);
-                ft_putstr_fd(": ", 2);
-                ft_putendl_fd(strerror(errno), 2);
+		ls_error(0, file);
 		return (-1);
 	}
 	while ((info = readdir(dir)))
@@ -75,13 +72,7 @@ int				get_file_list(char *file, char *path, t_lsopt opt, t_flist **list)
 				if (lstat(new.path, &buf) != -1)
 					add_node(new, buf, opt, list);
 				else
-				{
-					ft_putstr_fd("ft_ls: ", 2);
-					ft_putstr_fd(new.name, 2);
-					ft_putchar_fd(' ', 2);
-					ft_putendl_fd(strerror(errno), 2);
-					ft_putchar_fd('\n', 2);
-				}
+					ls_error(0, new.name);
 			}
 		}
 	}

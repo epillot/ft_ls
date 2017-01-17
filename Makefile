@@ -6,7 +6,7 @@
 #    By: epillot <marvin@42.fr>                     +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2017/01/04 16:40:08 by epillot           #+#    #+#              #
-#    Updated: 2017/01/13 19:36:59 by epillot          ###   ########.fr        #
+#    Updated: 2017/01/17 16:10:05 by epillot          ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -19,11 +19,12 @@ SRC = main.c\
 	  get_option_ls.c\
 	  add_node.c\
 	  get_file_list.c\
-	  get_width.c\
+	  get_width_and_tot.c\
 	  print_content.c\
 	  print_file.c\
 	  print_dir.c\
 	  free_list.c\
+	  ls_error.c\
 
 OBJ = $(SRC:.c=.o)
 

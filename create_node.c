@@ -6,7 +6,7 @@
 /*   By: epillot <marvin@42.fr>                     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2017/01/12 17:18:34 by epillot           #+#    #+#             */
-/*   Updated: 2017/01/13 19:29:09 by epillot          ###   ########.fr       */
+/*   Updated: 2017/01/17 20:16:46 by epillot          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -54,15 +54,30 @@ static void	get_perm(mode_t st_mode, char perm[11])
 static char	*get_time(time_t mtime)
 {
 	time_t	actual_time;
+	time_t	diff;
 	char	*s_time;
 	char	*output;
+	char	*tmp;
 
 	time(&actual_time);
 	s_time = ctime(&mtime);
 	if (!(output = ft_strsub(s_time, 4, 12)))
 		return (NULL);
-	if (actual_time - mtime >= 15811200)
-		ft_strncpy(output + 7, s_time + 19, 5);
+	diff = actual_time - mtime;
+	if (diff > 15811200 || diff < -3600)
+	{
+		if (mtime <= 253402297199)
+			ft_strncpy(output + 7, s_time + 19, 5);
+		else
+		{
+			tmp = output;
+			output = ft_strnew(13);
+			ft_strncpy(output, tmp, 7);
+			output[7] = ' ';
+			ft_strncpy(output + 8, s_time + 24, 5);
+			free(tmp);
+		}
+	}
 	return (output);
 }
 

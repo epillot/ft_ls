@@ -6,13 +6,36 @@
 /*   By: epillot <marvin@42.fr>                     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2017/01/05 17:22:33 by epillot           #+#    #+#             */
-/*   Updated: 2017/01/11 14:54:26 by epillot          ###   ########.fr       */
+/*   Updated: 2017/01/17 18:29:25 by epillot          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "ft_ls.h"
 
-int		get_option_ls(int ac, char **av, t_lsopt *opt)
+static int	ls_usage(char c)
+{
+	ft_printf_fd(2, "ft_ls: illegal option -- %c\n", c);
+	ft_printf_fd(2, "usage: ft_ls [-Ralrt] [file ...]\n");
+	exit(EXIT_FAILURE);
+}
+
+static void	get_option_ls_aux(char c, t_lsopt *opt)
+{
+	if (c == 'l')
+		opt->l = 1;
+	else if (c == 'R')
+		opt->rec = 1;
+	else if (c == 'a')
+		opt->a = 1;
+	else if (c == 'r')
+		opt->r = 1;
+	else if (c == 't')
+		opt->t = 1;
+	else if (c != '1')
+		ls_usage(c);
+}
+
+int			get_option_ls(int ac, char **av, t_lsopt *opt)
 {
 	int		i;
 	int		j;
@@ -22,24 +45,11 @@ int		get_option_ls(int ac, char **av, t_lsopt *opt)
 	while (i < ac && av[i][0] == '-' && av[i][1])
 	{
 		j = 1;
+		if (av[i][1] == '-')
+			return (i + 1);
 		while (av[i][j])
 		{
-			if (av[i][j] == 'l')
-				opt->l = 1;
-			else if (av[i][j] == 'R')
-				opt->rec = 1;
-			else if (av[i][j] == 'a')
-				opt->a = 1;
-			else if (av[i][j] == 'r')
-				opt->r = 1;
-			else if (av[i][j] == 't')
-				opt->t = 1;
-			else
-			{
-				ft_printf("ft_ls: illegal option -- %c\n", av[i][j]);
-				ft_printf("usage: ft_ls [-Ralrt] [file ...]\n");
-				exit(EXIT_FAILURE);
-			}
+			get_option_ls_aux(av[i][j], opt);
 			j++;
 		}
 		i++;
