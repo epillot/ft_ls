@@ -6,7 +6,7 @@
 #    By: epillot <marvin@42.fr>                     +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2016/11/03 15:38:05 by epillot           #+#    #+#              #
-#    Updated: 2017/01/17 12:49:38 by epillot          ###   ########.fr        #
+#    Updated: 2017/01/18 18:11:51 by epillot          ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -104,6 +104,7 @@ SRC = ft_atoi.c\
 	  u_convert.c\
 	  wc_convert.c\
 	  ws_convert.c\
+	  nb_size.c\
 
 OBJ = $(SRC:.c=.o)
 

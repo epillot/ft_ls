@@ -6,7 +6,7 @@
 /*   By: epillot <marvin@42.fr>                     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2017/01/04 15:53:35 by epillot           #+#    #+#             */
-/*   Updated: 2017/01/17 18:19:51 by epillot          ###   ########.fr       */
+/*   Updated: 2017/01/18 18:50:45 by epillot          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -55,13 +55,13 @@ typedef struct	s_flist
 	char				perm[11];
 	mode_t				mode;
 	nlink_t				nb_link;
-	char				*usr_id;//[NAME_MAX + 1];
-	char				*grp_id;//[NAME_MAX + 1];
+	uid_t				uid;
+	gid_t				gid;
+	char				*usr_id;
+	char				*grp_id;
 	off_t				size;
 	time_t				mtime;
 	char				*time;
-//	char				file_name[NAME_MAX + 1];
-//	char				path[PATH_MAX];
 	blkcnt_t			nb_blocks;
 	dev_t				rdev;
 	struct s_flist		*right;
@@ -69,11 +69,11 @@ typedef struct	s_flist
 }				t_flist;
 
 int						get_option_ls(int ac, char **av, t_lsopt *opt);
-t_flist					*create_node(t_file file, t_stat buf);
 void					add_node(t_file file, t_stat buf, t_lsopt opt, t_flist **list);
-void					get_width_and_tot(t_flist *list, t_lsopt opt, int tab[7]);
+void					get_additional_part(t_flist *list, t_lsopt opt, int tab[7]);
 int						get_file_list(char *name, char *path, t_lsopt opt, t_flist **list);
 void					print_content(t_flist *list, t_lsopt opt, int tab[7]);
+void					get_long_info(t_flist *list);
 void					print_file(t_flist *list, t_lsopt *opt, int dir);
 void					print_dir(t_flist *list, t_lsopt *opt, int size, int nb);
 void					print_dir_content(t_flist *list, t_lsopt *opt, int size);

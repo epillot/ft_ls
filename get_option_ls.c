@@ -6,7 +6,7 @@
 /*   By: epillot <marvin@42.fr>                     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2017/01/05 17:22:33 by epillot           #+#    #+#             */
-/*   Updated: 2017/01/17 18:29:25 by epillot          ###   ########.fr       */
+/*   Updated: 2017/01/18 15:09:04 by epillot          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -45,7 +45,7 @@ int			get_option_ls(int ac, char **av, t_lsopt *opt)
 	while (i < ac && av[i][0] == '-' && av[i][1])
 	{
 		j = 1;
-		if (av[i][1] == '-')
+		if (av[i][1] == '-' && !av[i][2])
 			return (i + 1);
 		while (av[i][j])
 		{

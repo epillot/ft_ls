@@ -6,7 +6,7 @@
 /*   By: epillot <marvin@42.fr>                     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2017/01/11 16:40:05 by epillot           #+#    #+#             */
-/*   Updated: 2017/01/17 18:26:32 by epillot          ###   ########.fr       */
+/*   Updated: 2017/01/18 18:52:23 by epillot          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -49,7 +49,11 @@ void	print_file(t_flist *list, t_lsopt *opt, int dir)
 	ft_bzero(tab, sizeof(tab));
 	if (opt->l)
 	{
-		get_width_and_tot(list, *opt, tab);
+		get_additional_part(list, *opt, tab);
+		if (tab[3] && tab[5] > tab[3] + tab[4] + 2)
+			tab[3] = tab[5] - tab[4] - 2;
+		else if (tab[3])
+			tab[5] = tab[3] + tab[4] + 2;
 		if (list && dir)
 			ft_printf("total %d\n", tab[6]);
 	}

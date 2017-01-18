@@ -1,12 +1,12 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   create_node.c                                      :+:      :+:    :+:   */
+/*   get_long_info.c                                    :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: epillot <marvin@42.fr>                     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2017/01/12 17:18:34 by epillot           #+#    #+#             */
-/*   Updated: 2017/01/17 20:16:46 by epillot          ###   ########.fr       */
+/*   Created: 2017/01/18 18:18:01 by epillot           #+#    #+#             */
+/*   Updated: 2017/01/18 18:44:02 by epillot          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -53,25 +53,24 @@ static void	get_perm(mode_t st_mode, char perm[11])
 
 static char	*get_time(time_t mtime)
 {
-	time_t	actual_time;
-	time_t	diff;
-	char	*s_time;
-	char	*output;
-	char	*tmp;
+	time_t  actual;
+	char    *s_time;
+	char    *output;
+	char    *tmp;
 
-	time(&actual_time);
+	time(&actual);
 	s_time = ctime(&mtime);
 	if (!(output = ft_strsub(s_time, 4, 12)))
 		return (NULL);
-	diff = actual_time - mtime;
-	if (diff > 15811200 || diff < -3600)
+	if (actual - mtime > 15811200 || actual - mtime < -3600)
 	{
 		if (mtime <= 253402297199)
 			ft_strncpy(output + 7, s_time + 19, 5);
 		else
 		{
 			tmp = output;
-			output = ft_strnew(13);
+			if (!(output = ft_strnew(13)))
+				return (NULL);
 			ft_strncpy(output, tmp, 7);
 			output[7] = ' ';
 			ft_strncpy(output + 8, s_time + 24, 5);
@@ -81,34 +80,20 @@ static char	*get_time(time_t mtime)
 	return (output);
 }
 
-t_flist		*create_node(t_file file, t_stat buf)
+void		get_long_info(t_flist *list)
 {
-	t_flist		*output;
 	t_passwd	*uid;
 	t_group		*gid;
 
-	if (!(output = (t_flist*)ft_memalloc(sizeof(t_flist))))
-		return (NULL);
-	if (!(uid = getpwuid(buf.st_uid)))
-		return (NULL);
-	if (!(gid = getgrgid(buf.st_gid)))
-		return (NULL);
-	get_perm(buf.st_mode, output->perm);
-	output->mode = buf.st_mode;
-	output->nb_link = buf.st_nlink;
-	output->usr_id = ft_strdup(uid->pw_name);
-	output->grp_id = ft_strdup(gid->gr_name);
-	//ft_strncpy(output->usr_id, uid->pw_name, NAME_MAX + 1);
-	//ft_strncpy(output->grp_id, gid->gr_name, NAME_MAX + 1);
-	output->size = buf.st_size;
-	output->mtime = buf.st_mtime;
-	output->nb_blocks = buf.st_blocks;
-	output->rdev = buf.st_rdev;
-	if (!(output->time = get_time(buf.st_mtime)))
-		return (NULL);
-	output->name = ft_strdup(file.name);
-	output->path = ft_strdup(file.path);
-	//ft_strncpy(output->file.name, file.name, NAME_MAX + 1);
-	//ft_strncpy(output->file.path, file.path, PATH_MAX);
-	return (output);
+	if (!(uid = getpwuid(list->uid)))
+		ls_error(1, NULL);
+	if (!(gid = getgrgid(list->gid)))
+		ls_error(1, NULL);
+	get_perm(list->mode, list->perm);
+	if (!(list->usr_id = ft_strdup(uid->pw_name)))
+		ls_error(1, NULL);
+	if (!(list->grp_id = ft_strdup(gid->gr_name)))
+		ls_error(1, NULL);
+	if (!(list->time = get_time(list->mtime)))
+		ls_error(1, NULL);
 }

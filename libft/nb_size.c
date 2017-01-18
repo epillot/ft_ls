@@ -1,34 +1,28 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   free_list.c                                        :+:      :+:    :+:   */
+/*   get_number_size.c                                  :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: epillot <marvin@42.fr>                     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2017/01/13 15:29:07 by epillot           #+#    #+#             */
-/*   Updated: 2017/01/18 18:47:32 by epillot          ###   ########.fr       */
+/*   Created: 2017/01/18 18:08:02 by epillot           #+#    #+#             */
+/*   Updated: 2017/01/18 18:11:17 by epillot          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "ft_ls.h"
+#include "libft.h"
 
-void	free_list(t_flist **list)
+int		nb_size(intmax_t nb)
 {
-	if (*list)
+	int	ret;
+
+	ret = 1;
+	if (nb < 0)
+		ret++;
+	while (nb >= 10 || nb <= -10)
 	{
-		if ((*list)->left)
-			free_list(&(*list)->left);
-		if ((*list)->right)
-			free_list(&(*list)->right);
-		free((*list)->name);
-		free((*list)->path);
-		if ((*list)->usr_id)
-			free((*list)->usr_id);
-		if ((*list)->grp_id)
-			free((*list)->grp_id);
-		if ((*list)->time)
-			free((*list)->time);
-		free(*list);
-		*list = NULL;
+		nb /= 10;
+		ret++;
 	}
+	return (ret);
 }
