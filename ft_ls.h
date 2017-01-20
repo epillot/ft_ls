@@ -6,7 +6,7 @@
 /*   By: epillot <marvin@42.fr>                     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2017/01/04 15:53:35 by epillot           #+#    #+#             */
-/*   Updated: 2017/01/18 18:50:45 by epillot          ###   ########.fr       */
+/*   Updated: 2017/01/20 18:06:31 by epillot          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -35,8 +35,16 @@ typedef struct	s_lsopt
 	int					l;
 	int					rec;
 	int					a;
+	int					aa;
 	int					r;
 	int					t;
+	int					d;
+	int					p;
+	int					f;
+	int					u;
+	int					uu;
+	int					c;
+	int					ss;
 	int					f_print;
 	int					d_print;
 	int					printed;
@@ -60,7 +68,7 @@ typedef struct	s_flist
 	char				*usr_id;
 	char				*grp_id;
 	off_t				size;
-	time_t				mtime;
+	time_t				time_ref;
 	char				*time;
 	blkcnt_t			nb_blocks;
 	dev_t				rdev;
@@ -68,16 +76,15 @@ typedef struct	s_flist
 	struct s_flist		*left;
 }				t_flist;
 
-int						get_option_ls(int ac, char **av, t_lsopt *opt);
-void					add_node(t_file file, t_stat buf, t_lsopt opt, t_flist **list);
-void					get_additional_part(t_flist *list, t_lsopt opt, int tab[7]);
-int						get_file_list(char *name, char *path, t_lsopt opt, t_flist **list);
-void					print_content(t_flist *list, t_lsopt opt, int tab[7]);
-void					get_long_info(t_flist *list);
-void					print_file(t_flist *list, t_lsopt *opt, int dir);
-void					print_dir(t_flist *list, t_lsopt *opt, int size, int nb);
-void					print_dir_content(t_flist *list, t_lsopt *opt, int size);
-void					ls_error(int errnum, char *str);
-void					free_list(t_flist **list);
+int				get_option_ls(int ac, char **av, t_lsopt *opt);
+t_flist			*create_node(t_file file, t_stat buf, t_lsopt opt);
+void			add_node(t_file file, t_stat buf, t_lsopt opt, t_flist **list);
+void			get_additional_part(t_flist *list, t_lsopt opt, int tab[7]);
+void			get_flist(char *name, char *path, t_lsopt opt, t_flist **list);
+void			get_long_info(t_flist *list);
+void			print_files(t_flist *list, t_lsopt *opt, int dir);
+void			print_dir(t_flist *list, t_lsopt *opt, int size, int nb);
+void			ls_error(int errnum, char *str);
+void			free_list(t_flist **list);
 
 #endif

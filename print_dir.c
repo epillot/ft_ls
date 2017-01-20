@@ -6,37 +6,13 @@
 /*   By: epillot <marvin@42.fr>                     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2017/01/11 17:33:08 by epillot           #+#    #+#             */
-/*   Updated: 2017/01/17 20:16:56 by epillot          ###   ########.fr       */
+/*   Updated: 2017/01/20 12:57:02 by epillot          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "ft_ls.h"
 
-static void		std_cross(t_flist *list, t_lsopt *opt, int size, int nb)
-{
-	if (!list || (nb && !opt->rec))
-		return ;
-	if (list->left)
-		std_cross(list->left, opt, size, nb);
-	if (S_ISDIR(list->mode) && (!nb || (ft_strcmp(list->name, ".") && ft_strcmp(list->name, ".."))))
-		print_dir_content(list, opt, size);
-	if (list->right)
-		std_cross(list->right, opt, size, nb);
-}
-
-static void		rev_cross(t_flist *list, t_lsopt *opt, int size, int nb)
-{
-	if (!list || (nb && !opt->rec))
-		return ;
-	if (list->right)
-		rev_cross(list->right, opt, size, nb);
-	if (S_ISDIR(list->mode) && (!nb || (ft_strcmp(list->name, ".") && ft_strcmp(list->name, ".."))))
-		print_dir_content(list, opt, size);
-	if (list->left)
-		rev_cross(list->left, opt, size, nb);
-}
-
-void		print_dir_content(t_flist *list, t_lsopt *opt, int size)
+static void		print_dir_content(t_flist *list, t_lsopt *opt, int size)
 {
 	t_flist		*new;
 
@@ -50,13 +26,36 @@ void		print_dir_content(t_flist *list, t_lsopt *opt, int size)
 	}
 	else if (opt->printed)
 		ft_putchar('\n');
-	get_file_list(list->name, list->path, *opt, &new);
-	print_file(new, opt, 1);
-	if (opt->r)
-		rev_cross(new, opt, 2, 1);
-	else
-		std_cross(new, opt, 2, 1);
+	get_flist(list->name, list->path, *opt, &new);
+	print_files(new, opt, 1);
+	print_dir(new, opt, 2, 1);
 	free_list(&new);
+}
+
+static void		std_cross(t_flist *list, t_lsopt *opt, int size, int nb)
+{
+	if (!list || (nb && !opt->rec))
+		return ;
+	if (list->left)
+		std_cross(list->left, opt, size, nb);
+	if (S_ISDIR(list->mode) && (!nb ||
+				(ft_strcmp(list->name, ".") && ft_strcmp(list->name, ".."))))
+		print_dir_content(list, opt, size);
+	if (list->right)
+		std_cross(list->right, opt, size, nb);
+}
+
+static void		rev_cross(t_flist *list, t_lsopt *opt, int size, int nb)
+{
+	if (!list || (nb && !opt->rec))
+		return ;
+	if (list->right)
+		rev_cross(list->right, opt, size, nb);
+	if (S_ISDIR(list->mode) && (!nb
+				|| (ft_strcmp(list->name, ".") && ft_strcmp(list->name, ".."))))
+		print_dir_content(list, opt, size);
+	if (list->left)
+		rev_cross(list->left, opt, size, nb);
 }
 
 void			print_dir(t_flist *list, t_lsopt *opt, int size, int nb)

@@ -6,7 +6,7 @@
 /*   By: epillot <marvin@42.fr>                     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2017/01/18 18:50:08 by epillot           #+#    #+#             */
-/*   Updated: 2017/01/18 18:50:10 by epillot          ###   ########.fr       */
+/*   Updated: 2017/01/20 17:25:22 by epillot          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -30,8 +30,10 @@ static void	get_width(t_flist *list, int tab[7])
 			tab[4] = size;
 	}
 	else
-		if ((size = nb_size(list->size)) > tab[5]) 
+	{
+		if ((size = nb_size(list->size)) > tab[5])
 			tab[5] = size;
+	}
 }
 
 void		get_additional_part(t_flist *list, t_lsopt opt, int tab[7])

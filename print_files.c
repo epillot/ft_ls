@@ -1,18 +1,55 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   print_file.c                                       :+:      :+:    :+:   */
+/*   print_files.c                                      :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: epillot <marvin@42.fr>                     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2017/01/11 16:40:05 by epillot           #+#    #+#             */
-/*   Updated: 2017/01/18 18:52:23 by epillot          ###   ########.fr       */
+/*   Created: 2017/01/20 12:36:55 by epillot           #+#    #+#             */
+/*   Updated: 2017/01/20 17:04:03 by epillot          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "ft_ls.h"
 
-static void     std_cross(t_flist *list, int tab[7], t_lsopt *opt)
+static void		print_content_l(t_flist *list, int tab[7], t_lsopt opt)
+{
+	char	link[NAME_MAX + 1];
+
+	ft_printf("%s  %*hu ", list->perm, tab[0], list->nb_link);
+	ft_printf("%-*s  %-*s  ", tab[1], list->usr_id, tab[2], list->grp_id);
+	if (*list->perm == 'c' || *list->perm == 'b')
+	{
+		ft_printf("%*d, ", tab[3], major(list->rdev));
+		ft_printf("%*d ", tab[4], minor(list->rdev));
+	}
+	else
+		ft_printf("%*lld ", tab[5], list->size);
+	if (opt.p && S_ISDIR(list->mode))
+		ft_printf("%s %s/", list->time, list->name);
+	else
+		ft_printf("%s %s", list->time, list->name);
+	if (*list->perm == 'l')
+	{
+		ft_bzero(link, NAME_MAX + 1);
+		readlink(list->path, link, NAME_MAX);
+		ft_printf(" -> %s\n", link);
+	}
+	else
+		ft_putchar('\n');
+}
+
+static void		print_content(t_flist *list, t_lsopt opt, int tab[6])
+{
+	if (opt.l)
+		print_content_l(list, tab, opt);
+	else if (opt.p && S_ISDIR(list->mode))
+		ft_printf("%s/\n", list->name);
+	else
+		ft_printf("%s\n", list->name);
+}
+
+static void		std_cross(t_flist *list, int tab[7], t_lsopt *opt)
 {
 	if (!list)
 		return ;
@@ -42,7 +79,7 @@ static void		rev_cross(t_flist *list, int tab[7], t_lsopt *opt)
 		rev_cross(list->left, tab, opt);
 }
 
-void	print_file(t_flist *list, t_lsopt *opt, int dir)
+void			print_files(t_flist *list, t_lsopt *opt, int dir)
 {
 	int		tab[7];
 

@@ -6,7 +6,7 @@
 /*   By: epillot <marvin@42.fr>                     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2017/01/12 17:11:27 by epillot           #+#    #+#             */
-/*   Updated: 2017/01/18 16:07:14 by epillot          ###   ########.fr       */
+/*   Updated: 2017/01/20 15:58:02 by epillot          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -115,12 +115,18 @@ int				main(int ac, char **av)
 	i = get_option_ls(ac, av, &opt);
 	ac -= i;
 	av += i;
-	sort_param_ascii(ac, av);
+	if (!opt.f)
+		sort_param_ascii(ac, av);
 	get_arg_list(ac, av, opt, &list);
 	opt.f_print = 1;
-	print_file(list, &opt, 0);
-	opt.d_print = 1;
-	print_dir(list, &opt, ac, 0);
+	if (opt.d)
+		opt.d_print = 1;
+	print_files(list, &opt, 0);
+	if (!opt.d)
+	{
+		opt.d_print = 1;
+		print_dir(list, &opt, ac, 0);
+	}
 	free_list(&list);
 	return (0);
 }

@@ -6,32 +6,11 @@
 /*   By: epillot <marvin@42.fr>                     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2017/01/13 19:36:40 by epillot           #+#    #+#             */
-/*   Updated: 2017/01/18 18:42:41 by epillot          ###   ########.fr       */
+/*   Updated: 2017/01/20 15:37:09 by epillot          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "ft_ls.h"
-
-static t_flist	*create_node(t_file file, t_stat buf)
-{
-	t_flist     *output;
-
-	if (!(output = (t_flist*)ft_memalloc(sizeof(t_flist))))
-		return (NULL);
-	output->uid = buf.st_uid;
-	output->gid = buf.st_gid;
-	output->mode = buf.st_mode;
-	output->nb_link = buf.st_nlink;
-	output->size = buf.st_size;
-	output->mtime = buf.st_mtime;
-	output->nb_blocks = buf.st_blocks;
-	output->rdev = buf.st_rdev;
-	if (!(output->name = ft_strdup(file.name)))
-		return (NULL);
-	if (!(output->path = ft_strdup(file.path)))
-		return (NULL);
-	return (output);
-}
 
 static void		check_ascii(t_flist *elem, t_flist **node)
 {
@@ -52,10 +31,17 @@ static void		check_ascii(t_flist *elem, t_flist **node)
 	}
 }
 
-static void		add_node_ascii(t_flist *root, t_flist *elem)
+static void		add_node_right(t_flist *root, t_flist *elem)
 {
+	t_flist	*tmp;
+
 	while (root)
-		check_ascii(elem, &root);
+	{
+		tmp = root;
+		root = root->right;
+		if (!root)
+			tmp->right = elem;
+	}
 }
 
 static void		add_node_time(t_flist *root, t_flist *elem)
@@ -65,9 +51,33 @@ static void		add_node_time(t_flist *root, t_flist *elem)
 	while (root)
 	{
 		tmp = root;
-		if (elem->mtime == root->mtime)
+		if (elem->time_ref == root->time_ref)
 			check_ascii(elem, &root);
-		else if (elem->mtime > root->mtime)
+		else if (elem->time_ref > root->time_ref)
+		{
+			root = root->left;
+			if (!root)
+				tmp->left = elem;
+		}
+		else
+		{
+			root = root->right;
+			if (!root)
+				tmp->right = elem;
+		}
+	}
+}
+
+static void		add_node_size(t_flist *root, t_flist *elem)
+{
+	t_flist	*tmp;
+
+	while (root)
+	{
+		tmp = root;
+		if (elem->size == root->size)
+			check_ascii(elem, &root);
+		else if (elem->size > root->size)
 		{
 			root = root->left;
 			if (!root)
@@ -85,15 +95,24 @@ static void		add_node_time(t_flist *root, t_flist *elem)
 void			add_node(t_file file, t_stat buf, t_lsopt opt, t_flist **list)
 {
 	t_flist *elem;
+	t_flist	*tmp;
 
-	if (!(elem = create_node(file, buf)))
+	if (!(elem = create_node(file, buf, opt)))
 		ls_error(1, NULL);
 	if (*list)
 	{
+		tmp = *list;
 		if (opt.t)
 			add_node_time(*list, elem);
+		else if (opt.ss)
+			add_node_size(*list, elem);
+		else if (opt.f)
+			add_node_right(*list, elem);
 		else
-			add_node_ascii(*list, elem);
+		{
+			while (tmp)
+				check_ascii(elem, &tmp);
+		}
 	}
 	else
 		*list = elem;

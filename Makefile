@@ -6,7 +6,7 @@
 #    By: epillot <marvin@42.fr>                     +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2017/01/04 16:40:08 by epillot           #+#    #+#              #
-#    Updated: 2017/01/18 18:51:19 by epillot          ###   ########.fr        #
+#    Updated: 2017/01/20 15:39:48 by epillot          ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -16,12 +16,12 @@ FLAG = -Wall -Wextra -Werror
 
 SRC = main.c\
 	  get_option_ls.c\
+	  create_node.c\
 	  add_node.c\
-	  get_file_list.c\
+	  get_flist.c\
 	  get_additional_part.c\
-	  print_content.c\
 	  get_long_info.c\
-	  print_file.c\
+	  print_files.c\
 	  print_dir.c\
 	  free_list.c\
 	  ls_error.c\

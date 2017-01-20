@@ -6,11 +6,20 @@
 /*   By: epillot <marvin@42.fr>                     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2017/01/05 19:14:07 by epillot           #+#    #+#             */
-/*   Updated: 2017/01/18 15:12:33 by epillot          ###   ########.fr       */
+/*   Updated: 2017/01/20 16:16:14 by epillot          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "ft_ls.h"
+
+static int		is_in(char *name)
+{
+	if (ft_strcmp(name, ".") == 0)
+		return (0);
+	if (ft_strcmp(name, "..") == 0)
+		return (0);
+	return (1);
+}
 
 static int		get_path(char *file, char *parent, char path[PATH_MAX])
 {
@@ -39,7 +48,7 @@ static int		get_path(char *file, char *parent, char path[PATH_MAX])
 	}
 }
 
-int				get_file_list(char *file, char *path, t_lsopt opt, t_flist **list)
+void			get_flist(char *file, char *path, t_lsopt opt, t_flist **list)
 {
 	DIR			*dir;
 	t_dirent	*info;
@@ -49,11 +58,11 @@ int				get_file_list(char *file, char *path, t_lsopt opt, t_flist **list)
 	if (!(dir = opendir(path)))
 	{
 		ls_error(0, file);
-		return (-1);
+		return ;
 	}
 	while ((info = readdir(dir)))
 	{
-		if (opt.a || info->d_name[0] != '.')
+		if (opt.a || info->d_name[0] != '.' || (opt.aa && is_in(info->d_name)))
 		{
 			ft_strncpy(new.name, info->d_name, NAME_MAX + 1);
 			if (get_path(new.name, path, new.path))
@@ -66,5 +75,4 @@ int				get_file_list(char *file, char *path, t_lsopt opt, t_flist **list)
 		}
 	}
 	closedir(dir);
-	return (1);
 }
