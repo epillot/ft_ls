@@ -6,7 +6,7 @@
 /*   By: epillot <marvin@42.fr>                     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2017/01/12 17:11:27 by epillot           #+#    #+#             */
-/*   Updated: 2017/01/20 15:58:02 by epillot          ###   ########.fr       */
+/*   Updated: 2017/01/23 14:53:09 by epillot          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -36,7 +36,7 @@ static void		sort_param_ascii(int ac, char **av)
 	}
 }
 
-static int		init_file(char *arg, t_file *file)
+static int		init_file(char *arg, t_file *file, t_lsopt *opt)
 {
 	int	i;
 
@@ -50,7 +50,7 @@ static int		init_file(char *arg, t_file *file)
 	if (i == NAME_MAX + 1)
 	{
 		errno = ENAMETOOLONG;
-		ls_error(0, arg);
+		ls_error(0, arg, opt);
 		return (0);
 	}
 	else
@@ -62,33 +62,33 @@ static int		init_file(char *arg, t_file *file)
 	return (0);
 }
 
-static void		add_arg_in_list(char *arg, t_lsopt opt, t_flist **list)
+static void		add_arg_in_list(char *arg, t_lsopt *opt, t_flist **list)
 {
 	t_stat	buf;
 	t_file	file;
 
-	if (init_file(arg, &file))
+	if (init_file(arg, &file, opt))
 	{
-		if (opt.l)
+		if (opt->l)
 		{
 			if (lstat(arg, &buf) != -1)
-				add_node(file, buf, opt, list);
+				add_node(file, buf, *opt, list);
 			else
-				ls_error(0, arg);
+				ls_error(0, arg, opt);
 		}
 		else
 		{
 			if (stat(arg, &buf) != -1)
-				add_node(file, buf, opt, list);
+				add_node(file, buf, *opt, list);
 			else if (lstat(arg, &buf) != -1)
-				add_node(file, buf, opt, list);
+				add_node(file, buf, *opt, list);
 			else
-				ls_error(0, arg);
+				ls_error(0, arg, opt);
 		}
 	}
 }
 
-static void		get_arg_list(int ac, char **av, t_lsopt opt, t_flist **list)
+static void		get_arg_list(int ac, char **av, t_lsopt *opt, t_flist **list)
 {
 	int		i;
 
@@ -117,8 +117,7 @@ int				main(int ac, char **av)
 	av += i;
 	if (!opt.f)
 		sort_param_ascii(ac, av);
-	get_arg_list(ac, av, opt, &list);
-	opt.f_print = 1;
+	get_arg_list(ac, av, &opt, &list);
 	if (opt.d)
 		opt.d_print = 1;
 	print_files(list, &opt, 0);
@@ -128,5 +127,5 @@ int				main(int ac, char **av)
 		print_dir(list, &opt, ac, 0);
 	}
 	free_list(&list);
-	return (0);
+	return (opt.error == 1 ? 1 : 0);
 }

@@ -6,7 +6,7 @@
 /*   By: epillot <marvin@42.fr>                     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2017/01/05 19:14:07 by epillot           #+#    #+#             */
-/*   Updated: 2017/01/20 16:16:14 by epillot          ###   ########.fr       */
+/*   Updated: 2017/01/23 15:01:08 by epillot          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -21,7 +21,8 @@ static int		is_in(char *name)
 	return (1);
 }
 
-static int		get_path(char *file, char *parent, char path[PATH_MAX])
+static int		get_path(char *file, char *parent, char path[PATH_MAX],
+		t_lsopt *opt)
 {
 	int	i;
 
@@ -36,7 +37,7 @@ static int		get_path(char *file, char *parent, char path[PATH_MAX])
 	if (PATH_MAX - i <= (int)ft_strlen(file))
 	{
 		errno = ENAMETOOLONG;
-		ls_error(0, file);
+		ls_error(0, file, opt);
 		return (0);
 	}
 	else
@@ -48,29 +49,29 @@ static int		get_path(char *file, char *parent, char path[PATH_MAX])
 	}
 }
 
-void			get_flist(char *file, char *path, t_lsopt opt, t_flist **list)
+void			get_flist(char *file, char *path, t_lsopt *opt, t_flist **list)
 {
 	DIR			*dir;
-	t_dirent	*info;
+	t_dirent	*d;
 	t_stat		buf;
 	t_file		new;
 
 	if (!(dir = opendir(path)))
 	{
-		ls_error(0, file);
+		ls_error(0, file, opt);
 		return ;
 	}
-	while ((info = readdir(dir)))
+	while ((d = readdir(dir)))
 	{
-		if (opt.a || info->d_name[0] != '.' || (opt.aa && is_in(info->d_name)))
+		if (opt->a || d->d_name[0] != '.' || (opt->aa && is_in(d->d_name)))
 		{
-			ft_strncpy(new.name, info->d_name, NAME_MAX + 1);
-			if (get_path(new.name, path, new.path))
+			ft_strncpy(new.name, d->d_name, NAME_MAX + 1);
+			if (get_path(new.name, path, new.path, opt))
 			{
 				if (lstat(new.path, &buf) != -1)
-					add_node(new, buf, opt, list);
+					add_node(new, buf, *opt, list);
 				else
-					ls_error(0, new.name);
+					ls_error(0, new.name, opt);
 			}
 		}
 	}

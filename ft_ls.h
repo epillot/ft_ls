@@ -6,7 +6,7 @@
 /*   By: epillot <marvin@42.fr>                     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2017/01/04 15:53:35 by epillot           #+#    #+#             */
-/*   Updated: 2017/01/20 18:11:38 by epillot          ###   ########.fr       */
+/*   Updated: 2017/01/23 14:56:29 by epillot          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -45,9 +45,9 @@ typedef struct	s_lsopt
 	int					uu;
 	int					c;
 	int					ss;
-	int					f_print;
 	int					d_print;
 	int					printed;
+	int					error;
 }				t_lsopt;
 
 typedef struct	s_file
@@ -80,11 +80,11 @@ int				get_option_ls(int ac, char **av, t_lsopt *opt);
 t_flist			*create_node(t_file file, t_stat buf, t_lsopt opt);
 void			add_node(t_file file, t_stat buf, t_lsopt opt, t_flist **list);
 void			get_additional_part(t_flist *list, t_lsopt opt, int tab[7]);
-void			get_flist(char *name, char *path, t_lsopt opt, t_flist **list);
-void			get_long_info(t_flist *list);
+void			get_flist(char *name, char *path, t_lsopt *opt, t_flist **list);
+void			get_long_info(t_flist *list, t_lsopt *opt);
 void			print_files(t_flist *list, t_lsopt *opt, int dir);
 void			print_dir(t_flist *list, t_lsopt *opt, int size, int nb);
-void			ls_error(int errnum, char *str);
+void			ls_error(int errnum, char *str, t_lsopt *opt);
 void			free_list(t_flist **list);
 
 #endif

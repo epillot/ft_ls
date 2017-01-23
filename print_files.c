@@ -6,7 +6,7 @@
 /*   By: epillot <marvin@42.fr>                     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2017/01/20 12:36:55 by epillot           #+#    #+#             */
-/*   Updated: 2017/01/20 17:04:03 by epillot          ###   ########.fr       */
+/*   Updated: 2017/01/23 15:29:23 by epillot          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,11 +14,11 @@
 
 static void		print_content_l(t_flist *list, int tab[7], t_lsopt opt)
 {
-	char	link[NAME_MAX + 1];
+	char	link[PATH_MAX];
 
 	ft_printf("%s  %*hu ", list->perm, tab[0], list->nb_link);
 	ft_printf("%-*s  %-*s  ", tab[1], list->usr_id, tab[2], list->grp_id);
-	if (*list->perm == 'c' || *list->perm == 'b')
+	if (S_ISCHR(list->mode) || S_ISBLK(list->mode))
 	{
 		ft_printf("%*d, ", tab[3], major(list->rdev));
 		ft_printf("%*d ", tab[4], minor(list->rdev));
@@ -31,8 +31,8 @@ static void		print_content_l(t_flist *list, int tab[7], t_lsopt opt)
 		ft_printf("%s %s", list->time, list->name);
 	if (*list->perm == 'l')
 	{
-		ft_bzero(link, NAME_MAX + 1);
-		readlink(list->path, link, NAME_MAX);
+		ft_bzero(link, PATH_MAX);
+		readlink(list->path, link, PATH_MAX);
 		ft_printf(" -> %s\n", link);
 	}
 	else
@@ -55,7 +55,7 @@ static void		std_cross(t_flist *list, int tab[7], t_lsopt *opt)
 		return ;
 	if (list->left)
 		std_cross(list->left, tab, opt);
-	if ((opt->f_print && !S_ISDIR(list->mode)) || opt->d_print)
+	if (opt->d_print || !S_ISDIR(list->mode))
 	{
 		print_content(list, *opt, tab);
 		opt->printed = 1;
@@ -70,7 +70,7 @@ static void		rev_cross(t_flist *list, int tab[7], t_lsopt *opt)
 		return ;
 	if (list->right)
 		rev_cross(list->right, tab, opt);
-	if ((opt->f_print && !S_ISDIR(list->mode)) || opt->d_print)
+	if (opt->d_print || !S_ISDIR(list->mode))
 	{
 		print_content(list, *opt, tab);
 		opt->printed = 1;

@@ -6,7 +6,7 @@
 /*   By: epillot <marvin@42.fr>                     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2017/01/18 18:18:01 by epillot           #+#    #+#             */
-/*   Updated: 2017/01/20 17:25:10 by epillot          ###   ########.fr       */
+/*   Updated: 2017/01/23 14:55:55 by epillot          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -80,20 +80,29 @@ static char	*get_time(time_t time_ref)
 	return (output);
 }
 
-void		get_long_info(t_flist *list)
+void		get_long_info(t_flist *list, t_lsopt *opt)
 {
-	t_passwd	*uid;
-	t_group		*gid;
-
-	if (!(gid = getgrgid(list->gid)))
-		ls_error(1, NULL);
-	if (!(uid = getpwuid(list->uid)))
-		ls_error(1, NULL);
 	get_perm(list->mode, list->perm);
-	if (!(list->usr_id = ft_strdup(uid->pw_name)))
-		ls_error(1, NULL);
-	if (!(list->grp_id = ft_strdup(gid->gr_name)))
-		ls_error(1, NULL);
+	if (getgrgid(list->gid) != NULL)
+	{
+		if (!(list->grp_id = ft_strdup(getgrgid(list->gid)->gr_name)))
+			ls_error(1, NULL, opt);
+	}
+	else
+	{
+		if (!(list->grp_id = ft_itoa(list->gid)))
+			ls_error(1, NULL, opt);
+	}
+	if (getpwuid(list->uid) != NULL)
+	{
+		if (!(list->usr_id = ft_strdup(getpwuid(list->uid)->pw_name)))
+			ls_error(1, NULL, opt);
+	}
+	else
+	{
+		if (!(list->usr_id = ft_itoa(list->uid)))
+			ls_error(1, NULL, opt);
+	}
 	if (!(list->time = get_time(list->time_ref)))
-		ls_error(1, NULL);
+		ls_error(1, NULL, opt);
 }

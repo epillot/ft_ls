@@ -6,7 +6,7 @@
 /*   By: epillot <marvin@42.fr>                     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2017/01/13 19:36:40 by epillot           #+#    #+#             */
-/*   Updated: 2017/01/20 15:37:09 by epillot          ###   ########.fr       */
+/*   Updated: 2017/01/23 14:53:45 by epillot          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -98,7 +98,7 @@ void			add_node(t_file file, t_stat buf, t_lsopt opt, t_flist **list)
 	t_flist	*tmp;
 
 	if (!(elem = create_node(file, buf, opt)))
-		ls_error(1, NULL);
+		ls_error(1, NULL, &opt);
 	if (*list)
 	{
 		tmp = *list;

@@ -6,7 +6,7 @@
 /*   By: epillot <marvin@42.fr>                     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2017/01/18 18:50:08 by epillot           #+#    #+#             */
-/*   Updated: 2017/01/20 17:25:22 by epillot          ###   ########.fr       */
+/*   Updated: 2017/01/23 14:56:00 by epillot          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -22,7 +22,7 @@ static void	get_width(t_flist *list, int tab[7])
 		tab[1] = size;
 	if ((size = ft_strlen(list->grp_id)) > tab[2])
 		tab[2] = size;
-	if (S_ISCHR(list->mode))
+	if (S_ISCHR(list->mode) || S_ISBLK(list->mode))
 	{
 		if ((size = nb_size(major(list->rdev))) > tab[3])
 			tab[3] = size;
@@ -40,9 +40,9 @@ void		get_additional_part(t_flist *list, t_lsopt opt, int tab[7])
 {
 	if (!list)
 		return ;
-	if ((opt.f_print && !S_ISDIR(list->mode)) || opt.d_print)
+	if (opt.d_print || !S_ISDIR(list->mode))
 	{
-		get_long_info(list);
+		get_long_info(list, &opt);
 		get_width(list, tab);
 		tab[6] += list->nb_blocks;
 	}
