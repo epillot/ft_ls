@@ -33,15 +33,10 @@ static void		check_ascii(t_flist *elem, t_flist **node)
 
 static void		add_node_right(t_flist *root, t_flist *elem)
 {
-	t_flist	*tmp;
 
-	while (root)
-	{
-		tmp = root;
+	while (root->right)
 		root = root->right;
-		if (!root)
-			tmp->right = elem;
-	}
+	root->right = elem;
 }
 
 static void		add_node_time(t_flist *root, t_flist *elem)
