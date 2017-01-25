@@ -6,7 +6,7 @@
 /*   By: epillot <marvin@42.fr>                     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2017/01/13 19:36:40 by epillot           #+#    #+#             */
-/*   Updated: 2017/01/23 14:53:45 by epillot          ###   ########.fr       */
+/*   Updated: 2017/01/25 16:09:44 by epillot          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -33,7 +33,6 @@ static void		check_ascii(t_flist *elem, t_flist **node)
 
 static void		add_node_right(t_flist *root, t_flist *elem)
 {
-
 	while (root->right)
 		root = root->right;
 	root->right = elem;

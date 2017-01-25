@@ -6,7 +6,7 @@
 /*   By: epillot <marvin@42.fr>                     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2017/01/04 15:53:35 by epillot           #+#    #+#             */
-/*   Updated: 2017/01/23 14:56:29 by epillot          ###   ########.fr       */
+/*   Updated: 2017/01/25 15:57:11 by epillot          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,7 +16,7 @@
 
 # include <sys/types.h>
 # include <dirent.h>
-# include "libft/libft.h"
+# include "libft.h"
 # include <stdio.h>
 # include <sys/stat.h>
 # include <pwd.h>
